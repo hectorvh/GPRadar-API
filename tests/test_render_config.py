@@ -39,10 +39,29 @@ NOT_LIMITS = {"MIN_CONF"}
 BOUNDED_BY_ARRAY_ELEMENTS = {"MAX_TRACES", "MAX_SAMPLES"}
 
 
-def render_env():
+def render_service():
     blueprint = yaml.safe_load(Path(RENDER_YAML).read_text(encoding="utf-8"))
     (service,) = [s for s in blueprint["services"] if s.get("name") == "gpradar-api"]
-    return {item["key"]: str(item["value"]) for item in service["envVars"] if "value" in item}
+    return service
+
+
+def render_env():
+    return {item["key"]: str(item["value"]) for item in render_service()["envVars"] if "value" in item}
+
+
+def test_service_is_free_docker_in_frankfurt():
+    service = render_service()
+    assert service["plan"] == "free"
+    assert service["region"] == "frankfurt"
+    assert service["runtime"] == "docker"
+    assert service["healthCheckPath"] == "/health"
+
+
+@pytest.mark.parametrize("key", ["HF_REVISION", "ALLOWED_ORIGINS"])
+def test_secrets_are_set_in_the_dashboard_not_committed(key):
+    (item,) = [e for e in render_service()["envVars"] if e["key"] == key]
+    assert item.get("sync") is False
+    assert "value" not in item
 
 
 def is_number(text):

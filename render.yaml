@@ -5,6 +5,7 @@ services:
     name: gpradar-api
     runtime: docker
     plan: free
+    region: frankfurt
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
     autoDeploy: true
