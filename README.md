@@ -10,6 +10,40 @@ It is the backend of the GPRadar demo. The research code (processing, simulation
 training) lives in [hectorvh/GPRadar](https://github.com/hectorvh/GPRadar). The
 service is sized for Render's free tier: 512 MB RAM and 0.1 CPU.
 
+## Quick start
+
+You need **Python 3.12** (the pinned numpy does not install on 3.11) and a
+local copy of the model (`best.onnx`). Use a virtual environment so `pip`
+and `uvicorn` come from 3.12:
+
+```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+MODEL_PATH=/path/to/best.onnx .venv/bin/python -m uvicorn app.main:app --port 8000
+```
+
+On Windows (PowerShell):
+
+```powershell
+py -3.12 -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+$env:MODEL_PATH = "C:\path\to\best.onnx"   # the real path to your file
+.venv\Scripts\python -m uvicorn app.main:app --port 8000
+```
+
+If `best.onnx` is at `model/best.onnx`, `MODEL_PATH` is not needed.
+
+Then open <http://localhost:8000/docs> to try `/run` in the browser, or
+from another terminal:
+
+```bash
+curl http://localhost:8000/health
+curl -F sample_id=<id from /samples> http://localhost:8000/run
+```
+
+To run it in Docker instead, see [Run with Docker](#run-with-docker). For
+setup details and the tests, see [Run locally](#run-locally).
+
 ## Licence
 
 **AGPL-3.0** (see [LICENSE](LICENSE)). The detector weights are AGPL-3.0
