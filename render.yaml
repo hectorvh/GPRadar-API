@@ -21,8 +21,11 @@ services:
         value: "4000"
       - key: MAX_SAMPLES
         value: "4096"
+      - key: MAX_ARRAY_ELEMENTS
+        value: "2000000"
+      # 512 MB instance: a 25 MP JPEG peaked at about 393 MiB, so keep the 12 MP default.
       - key: MAX_PIXELS
-        value: "25000000"
+        value: "12000000"
       - key: RUN_TIMEOUT_S
         value: "25"
       - key: MAX_CONCURRENT_RUNS

@@ -183,7 +183,9 @@ docker stats --no-stream
 The build downloads `best.onnx` with `huggingface_hub` at `HF_REVISION`. It
 stops with an error if the argument is missing or still the placeholder.
 Optional: `--build-arg MODEL_SHA256=<hex>` checks the file's hash.
-On Render, `render.yaml` defines the service.
+On Render, `render.yaml` defines the service. Its values override the defaults
+in the limits table, so `tests/test_render_config.py` fails if any limit there
+is larger than its default in `app/config.py`.
 Render passes environment variables to the Docker build as build arguments,
 so you set `HF_REVISION` and `ALLOWED_ORIGINS` in the Render dashboard.
 
