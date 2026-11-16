@@ -1,0 +1,31 @@
+{
+  "samples": [
+    {
+      "id": "mendeley_utility_0028",
+      "name": "Mendeley utility (utility_0028)",
+      "kind": "image",
+      "file": "mendeley_utility_0028.jpg",
+      "default_mode": "detector",
+      "citation": "Mojahid et al. (2025), Intelligent recognition of subsurface utilities and voids using ground-penetrating radar and deep learning techniques: Data of GPR profiles images, Mendeley Data, DOI 10.17632/ww7fd9t325.1. Licence: CC BY 4.0.",
+      "description": "Real utility B-scan image (224 x 224 px) from the Mendeley GPR dataset, train split, with 1 hand-labelled target box."
+    },
+    {
+      "id": "mendeley_void_0045",
+      "name": "Mendeley void (void_0045)",
+      "kind": "image",
+      "file": "mendeley_void_0045.jpg",
+      "default_mode": "detector",
+      "citation": "Mojahid et al. (2025), Intelligent recognition of subsurface utilities and voids using ground-penetrating radar and deep learning techniques: Data of GPR profiles images, Mendeley Data, DOI 10.17632/ww7fd9t325.1. Licence: CC BY 4.0.",
+      "description": "Real void B-scan image (332 x 227 px) from the Mendeley GPR dataset, train split, with 1 hand-labelled target box."
+    },
+    {
+      "id": "gprmax_field_400mhz_seed182",
+      "name": "gprMax 400 MHz scene (seed 182)",
+      "kind": "gprmax",
+      "file": "gprmax_field_400mhz_seed182.npz",
+      "default_mode": "full",
+      "citation": "Simulated with gprMax (Warren et al. 2016)",
+      "description": "Simulated 400 MHz B-scan over a 5 m profile with 1 visible buried target, from the validation scenes."
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+-r requirements.txt
+pytest==9.2.0
+httpx==0.28.1     # FastAPI TestClient
+# Builds the tiny dummy ONNX model the API tests use when best.onnx is absent.
+onnx==1.23.2

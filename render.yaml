@@ -1,0 +1,37 @@
+# Render blueprint (v1.1). Render builds the Dockerfile and passes environment
+# variables to the build as build args, so HF_REVISION pins the model.
+services:
+  - type: web
+    name: gpradar-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: HF_REVISION
+        sync: false # full 40-char commit of hectorvh/gpradar-hyperbola-yolo that contains best.onnx
+      - key: ALLOWED_ORIGINS
+        sync: false # https://gpradar.hectorvh.com,https://<site>.netlify.app
+      - key: MAX_IMAGE_MB
+        value: "10"
+      - key: MAX_RAW_MB
+        value: "25"
+      - key: MAX_TRACES
+        value: "4000"
+      - key: MAX_SAMPLES
+        value: "4096"
+      - key: MAX_PIXELS
+        value: "25000000"
+      - key: RUN_TIMEOUT_S
+        value: "25"
+      - key: MAX_CONCURRENT_RUNS
+        value: "1"
+      - key: RATE_LIMIT_PER_MIN
+        value: "10"
+      - key: TRUSTED_PROXY_HOPS
+        value: "1" # Render's proxy appends the client address; check with LOG_LEVEL=debug
+      - key: MIN_CONF
+        value: "0.05"
+      - key: LOG_LEVEL
+        value: info

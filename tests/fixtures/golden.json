@@ -1,0 +1,76 @@
+{
+  "model": "best.onnx",
+  "model_sha256": "965ab4f73869c234a75a9ce1a0437ac243b0b2520aa77e5f6b364a354112b42d",
+  "conf": 0.25,
+  "iou": 0.5,
+  "box_format": "xyxy in pixels of the input image",
+  "note": "Scores and coordinates are rounded; compare with a tolerance.",
+  "samples": [
+    {
+      "id": "mendeley_utility_0028",
+      "input": "image file read as 8-bit greyscale",
+      "input_size_wh": [
+        224,
+        224
+      ],
+      "boxes": [
+        {
+          "xyxy": [
+            37.4,
+            0.2,
+            223.9,
+            134.5
+          ],
+          "score": 0.4242
+        }
+      ]
+    },
+    {
+      "id": "mendeley_void_0045",
+      "input": "image file read as 8-bit greyscale",
+      "input_size_wh": [
+        332,
+        227
+      ],
+      "boxes": [
+        {
+          "xyxy": [
+            62.2,
+            49.2,
+            330.8,
+            221.4
+          ],
+          "score": 0.6177
+        }
+      ]
+    },
+    {
+      "id": "gprmax_field_400mhz_seed182",
+      "input": "processed_u8_224 from the npz: 05a processing of the full record (time zero, dewow, mean-trace removal, band-pass, AGC), robust 8-bit, bilinear resize to 224 x 224",
+      "input_size_wh": [
+        224,
+        224
+      ],
+      "boxes": [
+        {
+          "xyxy": [
+            42.1,
+            79.4,
+            223.3,
+            224.0
+          ],
+          "score": 0.6179
+        },
+        {
+          "xyxy": [
+            181.3,
+            0.0,
+            224.0,
+            40.5
+          ],
+          "score": 0.4497
+        }
+      ]
+    }
+  ]
+}
