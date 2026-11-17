@@ -33,8 +33,11 @@ services:
         value: "1"
       - key: RATE_LIMIT_PER_MIN
         value: "10"
+      # Cloudflare sits in front of Render and sets CF-Connecting-IP to the real client.
+      - key: CLIENT_IP_HEADER
+        value: "cf-connecting-ip"
       - key: TRUSTED_PROXY_HOPS
-        value: "1" # Render's proxy appends the client address; check with LOG_LEVEL=debug
+        value: "1" # fallback only, when CF-Connecting-IP is absent or invalid
       - key: MIN_CONF
         value: "0.05"
       - key: LOG_LEVEL

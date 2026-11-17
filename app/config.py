@@ -17,6 +17,10 @@ def _env(name, default):
     return default if value is None or value.strip() == "" else value.strip()
 
 
+def _flag(name):
+    return _env(name, "0").lower() in ("1", "true", "yes", "on")
+
+
 def _origins(text):
     return tuple(item.strip().rstrip("/") for item in text.split(",") if item.strip() and item.strip() != "*")
 
@@ -49,9 +53,16 @@ class Settings:
     max_concurrent_runs: int = 1  # MAX_CONCURRENT_RUNS
     queue_wait_s: float = 2.0  # QUEUE_WAIT_S: wait for a free slot, then 503
     rate_limit_per_min: int = 10  # RATE_LIMIT_PER_MIN
-    # TRUSTED_PROXY_HOPS: proxies in front of the app that append to
-    # X-Forwarded-For; the client is the entry this many places from the right.
+    # CLIENT_IP_HEADER: a header that holds exactly one client address, set by
+    # the edge proxy (Cloudflare on Render: CF-Connecting-IP). Empty disables it.
+    client_ip_header: str = "cf-connecting-ip"
+    # TRUSTED_PROXY_HOPS: fallback when that header is absent or invalid. Proxies
+    # in front of the app that append to X-Forwarded-For; the client is the entry
+    # this many places from the right.
     trusted_proxy_hops: int = 1
+    # LOG_CLIENT_IP_SOURCES=1: log the client IP diagnostics line on every /run
+    # (normally once per process). For checking a deployment; leave it off.
+    log_client_ip_sources: bool = False
     min_conf: float = 0.05  # MIN_CONF
     max_windows: int = 12  # MAX_WINDOWS: tiling cap (Render 12, Cloud Run 40)
     onnx_threads: int = 1  # ONNX_THREADS (v1.2: 2)
@@ -87,7 +98,10 @@ def load_settings():
         max_concurrent_runs=int(_env("MAX_CONCURRENT_RUNS", base.max_concurrent_runs)),
         queue_wait_s=float(_env("QUEUE_WAIT_S", base.queue_wait_s)),
         rate_limit_per_min=int(_env("RATE_LIMIT_PER_MIN", base.rate_limit_per_min)),
+        # Unlike the other settings, an empty CLIENT_IP_HEADER is meaningful (off).
+        client_ip_header=os.environ.get("CLIENT_IP_HEADER", base.client_ip_header).strip().lower(),
         trusted_proxy_hops=int(_env("TRUSTED_PROXY_HOPS", base.trusted_proxy_hops)),
+        log_client_ip_sources=_flag("LOG_CLIENT_IP_SOURCES"),
         min_conf=float(_env("MIN_CONF", base.min_conf)),
         max_windows=int(_env("MAX_WINDOWS", base.max_windows)),
         onnx_threads=int(_env("ONNX_THREADS", base.onnx_threads)),

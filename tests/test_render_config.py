@@ -57,6 +57,12 @@ def test_service_is_free_docker_in_frankfurt():
     assert service["healthCheckPath"] == "/health"
 
 
+def test_client_ip_comes_from_cloudflare_header():
+    # On Render the right-most X-Forwarded-For entry is a Cloudflare edge, so the
+    # rate limit needs the header Cloudflare sets to the real client.
+    assert render_env().get("CLIENT_IP_HEADER") == "cf-connecting-ip"
+
+
 @pytest.mark.parametrize("key", ["HF_REVISION", "ALLOWED_ORIGINS"])
 def test_secrets_are_set_in_the_dashboard_not_committed(key):
     (item,) = [e for e in render_service()["envVars"] if e["key"] == key]

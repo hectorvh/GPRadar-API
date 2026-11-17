@@ -146,7 +146,9 @@ only: `box_px` stays in model-image pixels, and `box_norm` (0-1) is for drawing.
 | `RUN_TIMEOUT_S` | 25 | hard limit per run (504) |
 | `MAX_CONCURRENT_RUNS` | 1 | semaphore; extra requests wait `QUEUE_WAIT_S` (2), then 503 |
 | `RATE_LIMIT_PER_MIN` | 10 | `/run` per client IP |
-| `TRUSTED_PROXY_HOPS` | 1 | proxies in front of the app; the client IP is the `X-Forwarded-For` entry this many places from the right |
+| `CLIENT_IP_HEADER` | `cf-connecting-ip` | header that holds the one real client IP (set by Cloudflare); empty turns it off |
+| `TRUSTED_PROXY_HOPS` | 1 | fallback when that header is missing: the client IP is the `X-Forwarded-For` entry this many places from the right |
+| `LOG_CLIENT_IP_SOURCES` | off | `1` logs the client IP check on every `/run`, not just the first (for testing a deploy) |
 | `MIN_CONF` | 0.05 | lowest confidence returned |
 | `MAX_WINDOWS` | 12 | tiling cap |
 | `ONNX_THREADS` | 1 | onnxruntime intra/inter-op threads |
@@ -161,16 +163,31 @@ peak at ~290 MB, 4M values ~450 MB). The logs record run_id, kind, mode, size cl
 timings and status code. They never record file names or file contents.
 `/docs` is on deliberately (portfolio project).
 
-**Client IP.** Each proxy appends to `X-Forwarded-For`, so only the right-hand
-entries are reliable; the client can forge anything to their left. The app takes the entry
-`TRUSTED_PROXY_HOPS` places from the right, and it falls back to the socket peer
-(`request.client.host`) when the header is missing, too short or not an IP.
-uvicorn runs with `--no-proxy-headers` on purpose: with `--proxy-headers
---forwarded-allow-ips='*'` it would replace the client with the left-most
-(forgeable) entry. To check the setting on Render, set `LOG_LEVEL=debug`: the
-first `/run` logs where the client IP came from, the number of header entries
-and the address class (for example `public-ipv4`), but never the IP itself. If the class is
-`private`, there is one more proxy than configured: raise `TRUSTED_PROXY_HOPS`.
+**Client IP.** On Render a request goes from the client to Cloudflare, then to
+Render's proxy, then to the app. Render's proxy only adds to `X-Forwarded-For`,
+so the right-most entry there is a Cloudflare server, and everything to its
+left can be made up by the client. Cloudflare sets `CF-Connecting-IP` to the
+real client address, so the rate limit uses that header when it holds exactly
+one valid IP, and only falls back to `X-Forwarded-For` (`TRUSTED_PROXY_HOPS`)
+and then the socket peer when it does not. uvicorn runs with
+`--no-proxy-headers`, so the app is the only place that reads these headers.
+
+**Checking it on Render.** The first `/run` after each start logs one INFO
+line: which source was used, how many `X-Forwarded-For` entries there were,
+whether `CF-Connecting-IP` and `True-Client-IP` were present, and the kind of
+each candidate address (for example `public-ipv4`), never the address itself.
+To test a deploy, set `LOG_CLIENT_IP_SOURCES=1`, then send 15 `/run` requests
+in a row, each with a different made-up `X-Forwarded-For`:
+
+```bash
+for i in $(seq 1 15); do
+  curl -s -o /dev/null -w "%{http_code}\n" -H "X-Forwarded-For: 10.0.0.$i" \
+    -F sample_id=mendeley_utility_0028 https://<your-service>.onrender.com/run
+done
+```
+
+The first 10 should return 200 and the rest 429, and the logs should show
+`source=header:cf-connecting-ip`. Then remove `LOG_CLIENT_IP_SOURCES` again.
 
 Measured peak memory (one process, including the test client's copy of the
 upload): largest allowed JPEG (12 MP colour) 185 MiB; 12 MP PNG (no draft)

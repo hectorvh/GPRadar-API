@@ -2,8 +2,9 @@
 
 Limits on POST /run, in the order they apply:
 1. request body size (Content-Length, then counted while it streams);
-2. per-IP token bucket (X-Forwarded-For entry TRUSTED_PROXY_HOPS from the
-   right, see ratelimit.client_ip; uvicorn runs with --no-proxy-headers);
+2. per-IP token bucket (CLIENT_IP_HEADER, else the X-Forwarded-For entry
+   TRUSTED_PROXY_HOPS from the right, see ratelimit.client_ip; uvicorn runs
+   with --no-proxy-headers);
 3. file type by magic bytes and per-type size, while the upload is copied;
 4. one concurrency slot per run (503 busy if none frees up quickly);
 5. a run timeout (504).
@@ -38,7 +39,7 @@ from .axes import parse_metadata
 from .config import API_VERSION, load_settings
 from .errors import ApiError
 from .model import load_model
-from .ratelimit import TokenBucket, client_ip, ip_class
+from .ratelimit import TokenBucket, client_ip, describe_client_ip
 from .readers import SNIFF_BYTES, configure_pillow, load_manifest, sniff
 from .schemas import ErrorResponse, Health, RunResponse, Sample
 
@@ -166,8 +167,13 @@ def create_app(settings=None, model=None):
             max_workers=settings.max_concurrent_runs, thread_name_prefix="run"
         )
         log.info("model loaded: %s@%s sha256=%s", app.state.model.repo, app.state.model.revision, app.state.model.sha256[:12])
-        log.debug("client IP: X-Forwarded-For entry %d from the right, else the socket peer",
-                  settings.trusted_proxy_hops)
+        log.info(
+            "client IP rule: header %s (one IP only), else X-Forwarded-For entry %d from the right, "
+            "else the socket peer; diagnostics logged %s",
+            settings.client_ip_header or "off",
+            settings.trusted_proxy_hops,
+            "on every /run" if settings.log_client_ip_sources else "on the first /run",
+        )
         try:
             yield
         finally:
@@ -230,14 +236,19 @@ def create_app(settings=None, model=None):
         run_id = uuid.uuid4().hex
         started = time.perf_counter()
         peer = request.client.host if request.client else None
-        ip, ip_source = client_ip(request.headers, peer, settings.trusted_proxy_hops)
-        if not state.client_ip_logged:
-            # Once per process, debug only: lets you check the proxy setup without logging IPs.
+        ip, ip_source = client_ip(
+            request.headers, peer, settings.trusted_proxy_hops, settings.client_ip_header
+        )
+        if settings.log_client_ip_sources or not state.client_ip_logged:
+            # Once per process (every /run with LOG_CLIENT_IP_SOURCES=1): lets you check
+            # the proxy setup. The line holds classes and counts, never an address.
             state.client_ip_logged = True
-            n_forwarded = len([p for p in request.headers.get("x-forwarded-for", "").split(",") if p.strip()])
-            log.debug(
-                "first /run: client IP from %s (%d X-Forwarded-For entries, hops=%d), class=%s, peer class=%s",
-                ip_source, n_forwarded, settings.trusted_proxy_hops, ip_class(ip), ip_class(peer or ""),
+            log.info(
+                "run_id=%s %s",
+                run_id,
+                describe_client_ip(
+                    request.headers, peer, settings.trusted_proxy_hops, settings.client_ip_header, ip_source
+                ),
             )
         allowed, retry = state.limiter.take(ip)
         if not allowed:
