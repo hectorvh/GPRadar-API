@@ -1,5 +1,7 @@
 # GPRadar-API
 
+[![tests](https://github.com/hectorvh/GPRadar-API/actions/workflows/tests.yml/badge.svg)](https://github.com/hectorvh/GPRadar-API/actions/workflows/tests.yml)
+
 A small web service that finds hyperbolas (buried pipes, voids, rocks) in
 ground-penetrating radar (GPR) B-scans. You send it a B-scan image or a gprMax
 simulation output. It runs the GPRadar processing chain and a YOLO11n detector
