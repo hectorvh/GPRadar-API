@@ -1,6 +1,14 @@
 # GPRadar-API
 
 [![tests](https://github.com/hectorvh/GPRadar-API/actions/workflows/tests.yml/badge.svg)](https://github.com/hectorvh/GPRadar-API/actions/workflows/tests.yml)
+[![License](https://img.shields.io/github/license/hectorvh/GPRadar-API)](https://github.com/hectorvh/GPRadar-API/blob/main/LICENSE)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-CPU-005CED?logo=onnx&logoColor=white)](https://onnxruntime.ai/)
+[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](Dockerfile)
+[![Model on Hugging Face](https://img.shields.io/badge/model-Hugging%20Face-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/hectorvh/gpradar-hyperbola-yolo)
+[![Live demo](https://img.shields.io/website?url=https%3A%2F%2Fgpradar.hectorvh.com&label=live%20demo&up_message=online&down_message=offline)](https://gpradar.hectorvh.com)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24339819.svg)](https://doi.org/10.5281/zenodo.24339819)
 
 A small web service that finds hyperbolas (buried pipes, voids, rocks) in
 ground-penetrating radar (GPR) B-scans. You send it a B-scan image or a gprMax
