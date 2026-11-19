@@ -6,7 +6,7 @@ import os
 from dataclasses import dataclass, replace
 from pathlib import Path
 
-API_VERSION = "1.1.0"
+API_VERSION = "1.1.1"
 ROOT = Path(__file__).resolve().parents[1]
 SAMPLES_DIR = Path(__file__).resolve().parent / "samples"
 MB = 1024 * 1024
