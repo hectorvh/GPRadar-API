@@ -2,7 +2,7 @@
   "samples": [
     {
       "id": "mendeley_utility_0028",
-      "name": "Mendeley utility (utility_0028)",
+      "name": "Utility (Mendeley)",
       "kind": "image",
       "file": "mendeley_utility_0028.jpg",
       "default_mode": "detector",
@@ -11,7 +11,7 @@
     },
     {
       "id": "mendeley_void_0045",
-      "name": "Mendeley void (void_0045)",
+      "name": "Void (Mendeley)",
       "kind": "image",
       "file": "mendeley_void_0045.jpg",
       "default_mode": "detector",
@@ -20,7 +20,7 @@
     },
     {
       "id": "gprmax_field_400mhz_seed182",
-      "name": "gprMax 400 MHz scene (seed 182)",
+      "name": "400 MHz (gprMax)",
       "kind": "gprmax",
       "file": "gprmax_field_400mhz_seed182.npz",
       "default_mode": "full",

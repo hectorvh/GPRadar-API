@@ -16,9 +16,11 @@ simulation output. It runs the GPRadar processing chain and a YOLO11n detector
 (ONNX, CPU only), then returns the boxes with their apex position, in traces and
 samples and, when the scan's metadata allows, in metres, nanoseconds and approximate depth.
 
-It is the backend of the GPRadar demo. The research code (processing, simulation,
-training) lives in [hectorvh/GPRadar](https://github.com/hectorvh/GPRadar). The
-service is sized for Render's free tier: 512 MB RAM and 0.1 CPU.
+It is the backend of the GPRadar demo, live at <https://gpradar.hectorvh.com>
+(web interface: [hectorvh/GPRadar-UI](https://github.com/hectorvh/GPRadar-UI)).
+The research code (processing, simulation, training) lives in
+[hectorvh/GPRadar](https://github.com/hectorvh/GPRadar). The service is sized
+for Render's free tier: 512 MB RAM and 0.1 CPU.
 
 ## Quick start
 
@@ -59,7 +61,7 @@ setup details and the tests, see [Run locally](#run-locally).
 **AGPL-3.0** (see [LICENSE](LICENSE)). The detector weights are AGPL-3.0
 (Ultralytics YOLO11), and the processing code is vendored from GPRadar, which is
 AGPL-3.0 too. If you run this service for other people over a network, the AGPL
-requires you to offer them its source code: the web UI links to this repository in its footer.
+requires you to offer them its source code: the web UI links to this repository in its About dialog (the ⓘ button in the top bar).
 
 ## Model
 
@@ -147,7 +149,7 @@ only: `box_px` stays in model-image pixels, and `box_norm` (0-1) is for drawing.
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `ALLOWED_ORIGINS` | `http://localhost:5173` | CORS allow-list, comma-separated (no `*`) |
+| `ALLOWED_ORIGINS` | `http://localhost:5173` | CORS allow-list, comma-separated (no `*`); in production e.g. `https://gpradar.hectorvh.com,https://<site>.netlify.app` |
 | `MAX_IMAGE_MB` | 10 | image upload limit |
 | `MAX_RAW_MB` | 25 | gprMax upload limit |
 | `MAX_TRACES` / `MAX_SAMPLES` | 4000 / 4096 | array size guard |
